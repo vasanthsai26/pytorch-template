@@ -7,6 +7,7 @@ import numpy as np
 import constants
 import torch.optim as optim
 import torch.nn as nn
+import torch.optim.lr_scheduler as lr_scheduler
 
 from datetime import datetime
 
@@ -88,7 +89,6 @@ def generate_run_id(args):
     ]
     return "".join(run_id_parts)
 
-import torch.optim as optim
 
 def create_optimizer(args, model_parameters):
     """
@@ -138,23 +138,58 @@ def create_loss_function(args):
     Raises:
         ValueError: If an invalid loss function type is specified.
     """
-    if args.loss_function == 'cross_entropy':
-        loss_function = nn.CrossEntropyLoss()
-    elif args.loss_function == 'mse':
-        loss_function = nn.MSELoss()
-    elif args.loss_function == 'l1':
-        loss_function = nn.L1Loss()
-    elif args.loss_function == 'smooth_l1':
-        loss_function = nn.SmoothL1Loss()
-    elif args.loss_function == 'bce':
-        loss_function = nn.BCELoss()
-    else:
+    loss_functions = {
+        'cross_entropy': nn.CrossEntropyLoss(),
+        'mse': nn.MSELoss(),
+        'l1': nn.L1Loss(),
+        'smooth_l1': nn.SmoothL1Loss(),
+        'bce': nn.BCELoss()
+    }
+
+    loss_function = loss_functions.get(args.loss_function)
+
+    if loss_function is None:
         raise ValueError(f"Invalid loss function type: {args.loss_function}")
 
     return loss_function
 
-def create_scheduler(args):
-    pass
+def create_lr_scheduler(args, optimizer):
+    """
+    Create a learning rate scheduler based on the specified arguments.
+
+    Args:
+        args (argparse.Namespace): Arguments specifying the scheduler type and its parameters.
+        optimizer (torch.optim.Optimizer): Optimizer object for the scheduler.
+
+    Returns:
+        torch.optim.lr_scheduler._LRScheduler: Learning rate scheduler object.
+
+    Raises:
+        ValueError: If an invalid scheduler_type is provided.
+
+    Supported scheduler_type options and their corresponding arguments:
+        - StepLR: step_size (int), gamma (float)
+        - MultiStepLR: milestones (list of ints), gamma (float)
+        - ExponentialLR: gamma (float)
+        - ReduceLROnPlateau: mode (str), factor (float), patience (int)
+        - CosineAnnealingLR: T_max (int), eta_min (float)
+        - CyclicLR: base_lr (float), max_lr (float)
+    """
+    scheduler = {
+        'StepLR': lr_scheduler.StepLR(optimizer, step_size=args.step_size, gamma=args.gamma),
+        'MultiStepLR': lr_scheduler.MultiStepLR(optimizer, milestones=args.milestones, gamma=args.gamma),
+        'ExponentialLR': lr_scheduler.ExponentialLR(optimizer, gamma=args.gamma),
+        'ReduceLROnPlateau': lr_scheduler.ReduceLROnPlateau(optimizer, mode=args.mode, factor=args.factor, patience=args.patience),
+        'CosineAnnealingLR': lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.T_max, eta_min=args.eta_min),
+        'CyclicLR': lr_scheduler.CyclicLR(optimizer, base_lr=args.base_lr, max_lr=args.max_lr)
+    }
+
+    scheduler = scheduler[args.scheduler_type]
+    if scheduler is None:
+        raise ValueError("Invalid scheduler_type. Supported options are: StepLR, MultiStepLR, ExponentialLR, ReduceLROnPlateau, CosineAnnealingLR, CyclicLR.")
+    return scheduler
+
+
 
 def load_checkpoint(checkpoint_path,model,optimizer):
     """Loads a checkpoint into the model.

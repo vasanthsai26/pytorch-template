@@ -93,11 +93,30 @@ def parse_args():
     parser.add_argument('--beta2', type=float, default=0.999, help='Beta2 for Adam optimizer')
 
     # Scheduler
-    parser.add_argument('--scheduler', default='StepLR', help='Scheduler type')
+    parser.add_argument('--scheduler_type', type=str, 
+                        choices=['StepLR', 'MultiStepLR', 'ExponentialLR', 'ReduceLROnPlateau', 'CosineAnnealingLR', 'CyclicLR'], 
+                        default='StepLR', help='Type of LR scheduler')
     parser.add_argument('--level', default='epoch', choices=['epoch', 'batch'],
                             help='Scheduling level: epoch or batch')
-    parser.add_argument('--step_size', type=int, default=10, help='Step size')
-    parser.add_argument('--gamma', type=float, default=0.1, help='Gamma value')
+    parser.add_argument('--step_size', type=int, default=1, help='Step size for StepLR scheduler')
+    parser.add_argument('--gamma', type=float, default=0.1, 
+                        help='Gamma value for StepLR, MultiStepLR, and ExponentialLR schedulers')
+    parser.add_argument('--milestones', type=int, nargs='+', default=[10, 20, 30], 
+                        help='Milestone values for MultiStepLR scheduler')
+    parser.add_argument('--mode', type=str, choices=['min', 'max'], default='min', 
+                        help='Mode for ReduceLROnPlateau scheduler')
+    parser.add_argument('--factor', type=float, default=0.1, 
+                        help='Factor value for ReduceLROnPlateau scheduler')
+    parser.add_argument('--patience', type=int, default=10, 
+                        help='Patience value for ReduceLROnPlateau scheduler')
+    parser.add_argument('--T_max', type=int, default=10, 
+                        help='T_max value for CosineAnnealingLR scheduler')
+    parser.add_argument('--eta_min', type=float, default=0, 
+                        help='Eta_min value for CosineAnnealingLR scheduler')
+    parser.add_argument('--base_lr', type=float, default=0.001, 
+                        help='Base learning rate for CyclicLR scheduler')
+    parser.add_argument('--max_lr', type=float, default=0.01, 
+                        help='Max learning rate for CyclicLR scheduler')
 
     # Loss Function
     parser.add_argument('--loss_function', type=str, default='cross_entropy', 
