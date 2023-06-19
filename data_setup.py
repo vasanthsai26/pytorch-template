@@ -87,22 +87,20 @@ def get_transforms(type):
     """
 
     if type == 'train':
-        train_transform = transforms.Compose([
+        train_transform = transforms.Compose([transforms.ToTensor(),
             transforms.Resize((int(constants.IMG_SIZE * constants.SCALE),
                                int(constants.IMG_SIZE * constants.SCALE))),
             transforms.RandomResizedCrop(constants.IMG_SIZE),
             transforms.RandomGrayscale(p=0.2),
-            transforms.ToTensor(),
             transforms.Normalize(mean=constants.IMAGENET_MEAN,
                                  std=constants.IMAGENET_STD)
         ])
         return train_transform
 
     elif type == 'test':
-        val_test_transform = transforms.Compose([
+        val_test_transform = transforms.Compose([transforms.ToTensor(),
             transforms.Resize(int(constants.IMG_SIZE * constants.SCALE)),
             transforms.CenterCrop(constants.IMG_SIZE),
-            transforms.ToTensor(),
             transforms.Normalize(mean=constants.IMAGENET_MEAN,
                                  std=constants.IMAGENET_STD)
         ])

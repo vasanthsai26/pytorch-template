@@ -1,20 +1,20 @@
 {
-    "experiment_name": "tempproject_model_adam_StepLR",
+    "experiment_name": "tempproject_model_Adam_StepLR",
     "project_name": "tempproject",
     "exp_date": "20230619",
-    "exp_dir": "D:\\MLworkSpace\\template\\tempproject_model_adam_StepLR\\20230619",
-    "run_id": "runH14M55lr0001wd1e-05",
+    "exp_dir": "/content/pytorch-template/tempproject_model_Adam_StepLR/20230619",
+    "run_id": "runH10M07lr0001wd1e-05",
     "checkpt_path": null,
-    "models_dir": "D:\\MLworkSpace\\template\\tempproject_model_adam_StepLR\\20230619\\models",
-    "results_dir": "D:\\MLworkSpace\\template\\tempproject_model_adam_StepLR\\20230619\\results",
-    "history_dir": "D:\\MLworkSpace\\template\\tempproject_model_adam_StepLR\\20230619\\history",
+    "models_dir": "/content/pytorch-template/tempproject_model_Adam_StepLR/20230619/models",
+    "results_dir": "/content/pytorch-template/tempproject_model_Adam_StepLR/20230619/results",
+    "history_dir": "/content/pytorch-template/tempproject_model_Adam_StepLR/20230619/history",
     "data_dir": "data",
     "meta_dir": "data/meta",
     "train_dir": "data/train",
     "test_dir": "data/test",
     "batch_size": 64,
     "train_split": 0.8,
-    "num_workers": 8,
+    "num_workers": 2,
     "means": [
         [
             0.485,
@@ -41,7 +41,7 @@
     "checkpoint_period": 1,
     "grad_clip": 0.0,
     "metric": "val_f1",
-    "optimizer": "adam",
+    "optimizer": "Adam",
     "learning_rate": 0.001,
     "momentum": 0.9,
     "weight_decay": 1e-05,
@@ -64,7 +64,7 @@
     "base_lr": 0.001,
     "max_lr": 0.01,
     "loss_function": "cross_entropy",
-    "device": "cpu",
+    "device": "cuda",
     "seed": 42,
-    "config_dir": "D:\\MLworkSpace\\template\\tempproject_model_adam_StepLR\\20230619\\config_0.json"
+    "config_dir": "/content/pytorch-template/tempproject_model_Adam_StepLR/20230619/config_0.json"
 }
