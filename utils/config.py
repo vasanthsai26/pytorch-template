@@ -6,7 +6,7 @@ import torch
 
 from datetime import datetime
 from munch import Munch
-from utils import seed_everything,generate_experiment_name,generate_run_id
+from helper import seed_everything,generate_experiment_name,generate_run_id
 
 
 def load_config():

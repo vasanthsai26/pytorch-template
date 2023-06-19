@@ -1,5 +1,5 @@
 from utils.config import load_config,setup_and_validate_config,save_config
-from utils import utils
+from utils import helper
 from data_setup import get_data,create_dataloaders
 from engine import ClassificationTrainer
 from model_builder import VehicleImageClassifier
@@ -21,13 +21,13 @@ def main(args):
 
     # Create the model
     model = VehicleImageClassifier()
-    optimizer = utils.create_optimizer(args, model.parameters())
-    criterion = utils.create_loss_function(args)
-    scheduler = utils.create_scheduler(args, optimizer)
+    optimizer = helper.create_optimizer(args, model.parameters())
+    criterion = helper.create_loss_function(args)
+    scheduler = helper.create_scheduler(args, optimizer)
 
     # Load checkpoint if specified
     if args.resume:
-        model, optimizer, checkpoint_values = utils.load_checkpoint(
+        model, optimizer, checkpoint_values = helper.load_checkpoint(
             args.checkpt_path, model, optimizer)
 
     wandb.login()
