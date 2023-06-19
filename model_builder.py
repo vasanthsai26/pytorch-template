@@ -43,7 +43,7 @@ class VehicleImageClassifier(nn.Module):
         Retrieves the backbone network for the classifier.
 
         """
-        weights = torchvision.models.vit_b_16_weights.IMAGENET1K_SWAG_LINEAR_V1
+        weights = torchvision.models.ViT_B_16_Weights.IMAGENET1K_SWAG_LINEAR_V1
         pretrained_model = torchvision.models.vit_b_16(weights=weights.DEFAULT)
         for param in pretrained_model.parameters():
             param.requires_grad = False
