@@ -181,7 +181,7 @@ def create_lr_scheduler(args, optimizer):
         'ExponentialLR': lr_scheduler.ExponentialLR(optimizer, gamma=args.gamma),
         'ReduceLROnPlateau': lr_scheduler.ReduceLROnPlateau(optimizer, mode=args.mode, factor=args.factor, patience=args.patience),
         'CosineAnnealingLR': lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.T_max, eta_min=args.eta_min),
-        'CyclicLR': lr_scheduler.CyclicLR(optimizer, base_lr=args.base_lr, max_lr=args.max_lr)
+        ##'CyclicLR': lr_scheduler.CyclicLR(optimizer, base_lr=args.base_lr, max_lr=args.max_lr)
     }
 
     scheduler = scheduler[args.scheduler_type]

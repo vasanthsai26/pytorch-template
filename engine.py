@@ -43,7 +43,8 @@ class ClassificationTrainer():
         for epoch in tqdm(range(self.args.start_iter, self.args.epochs)):
             train_metrics = self.train_epoch(dataloader=train_dataloader,
                                              criterion=self.criterion,
-                                             optimizer= self.optimizer)
+                                             optimizer= self.optimizer,
+                                             scheduler=self.scheduler)
             val_metrics   = self.test_epoch(dataloader=test_dataloader,
                                           criterion=self.criterion)
             epoch_metrics,history_df = self.log_metrics(epoch,
