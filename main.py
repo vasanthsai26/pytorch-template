@@ -23,7 +23,7 @@ def main(args):
     model = VehicleImageClassifier()
     optimizer = helper.create_optimizer(args, model.parameters())
     criterion = helper.create_loss_function(args)
-    scheduler = helper.create_scheduler(args, optimizer)
+    scheduler = helper.create_lr_scheduler(args, optimizer)
 
     # Load checkpoint if specified
     if args.resume:
