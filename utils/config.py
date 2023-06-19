@@ -87,8 +87,8 @@ def parse_args():
                         help="Evaluation metric to use")
 
     # Optimizer
-    parser.add_argument('--optimizer', type=str, default='adam', 
-                        choices=['adam', 'SGD'], 
+    parser.add_argument('--optimizer', type=str, default='Adam', 
+                        choices=['Adam', 'SGD'], 
                         help='Optimizer for training')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Learning rate (default: 0.001)')
     parser.add_argument('--momentum', type=float, default=0.9, help='Momentum for SGD optimizer (default: 0.9)')
