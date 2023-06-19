@@ -57,7 +57,7 @@ def generate_experiment_name(args):
     project_name = args.project_name
     model = args.model
     optimizer_type = args.optimizer
-    scheduler_type = args.scheduler
+    scheduler_type = args.scheduler_type
 
     experiment_name_parts = [
         project_name,
