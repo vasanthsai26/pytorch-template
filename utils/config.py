@@ -47,6 +47,10 @@ def parse_args():
     parser.add_argument('--run_id', type=str, default='run001')
     parser.add_argument('--checkpt_path', type=str, help='chekpoint model path to resume the experiment.')
 
+    parser.add_argument('--models_dir', type=str, default='models', help='Name of the models directory')
+    parser.add_argument('--results_dir', type=str, default='results', help='Name of the results directory')
+    parser.add_argument('--history_dir', type=str, default='history', help='Name of the history directory')
+    
     parser.add_argument('--data_dir', type=str, default='data', help='Name of the data directory')
     parser.add_argument('--meta_dir', type=str, default='data/meta', help='Name of the data directory')
     parser.add_argument('--train_dir', type=str, default='data/train', help='Name of the train data directory')
@@ -149,10 +153,11 @@ def setup_and_validate_config(args):
         args.experiment_name = generate_experiment_name(args)
         args.run_id = generate_run_id(args)
         args.exp_date = datetime.now().strftime("%Y%m%d")
-        os.makedirs(args.exp_date, exist_ok=True)
+        args.exp_dir = os.path.join(os.getcwd(),args.experiment_name,args.exp_date)
+        os.makedirs(args.exp_dir, exist_ok=True)
         for folder in ['models', 'results', 'history']:
-            args.__dict__[f'{folder}_dir'] = os.path.join(args.exp_date, folder)
-            os.makedirs(args.__dict__[f'{folder}_dir'], exist_ok=True)
+            args[f'{folder}_dir'] = os.path.join(args.exp_dir, folder)
+            os.makedirs(args[f'{folder}_dir'], exist_ok=True)
     
     print(f"Model Training from {args.exp_dir}")
     return args
