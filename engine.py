@@ -279,11 +279,11 @@ class ClassificationTrainer():
 
         avg_metrics = OrderedDict()
         avg_metrics.update({
-            f"{'train' if train else 'val'}_loss": round(epoch_metrics["epoch_loss"] / dataloader_len, 4),
-            f"{'train' if train else 'val'}_acc": round(epoch_metrics["epoch_accuracy"] / dataloader_len, 4),
-            f"{'train' if train else 'val'}_precision": round(epoch_metrics["epoch_precision"] / dataloader_len, 4),
-            f"{'train' if train else 'val'}_recall": round(epoch_metrics["epoch_recall"] / dataloader_len, 4),
-            f"{'train' if train else 'val'}_f1": round(epoch_metrics["epoch_f1_score"] / dataloader_len, 4),
+            f"{'train' if train else 'val'}_loss": round(epoch_metrics["epoch_loss"] / dataloader_len, 6),
+            f"{'train' if train else 'val'}_acc": round(epoch_metrics["epoch_accuracy"] / dataloader_len, 6),
+            f"{'train' if train else 'val'}_precision": round(epoch_metrics["epoch_precision"] / dataloader_len, 6),
+            f"{'train' if train else 'val'}_recall": round(epoch_metrics["epoch_recall"] / dataloader_len, 6),
+            f"{'train' if train else 'val'}_f1": round(epoch_metrics["epoch_f1_score"] / dataloader_len, 6),
         })
 
         return avg_metrics
@@ -326,9 +326,10 @@ class ClassificationTrainer():
             # Loss backward
             loss.backward()
 
-            if self.args.grad_clip:
+            if self.args.grad_clip and self.args.grad_clip != 0:
                 nn.utils.clip_grad_value_(self.model.parameters(), 
                                           self.args.grad_clip)
+
             # Optimizer step
             optimizer.step()
 
