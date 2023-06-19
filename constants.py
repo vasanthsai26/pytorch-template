@@ -13,7 +13,10 @@ SCALE = 1.1
 DATA_PATH = Path(os.path.join(os.getcwd(),"stanford-cars-dataset"))
 META_PATH = Path(os.path.join(DATA_PATH,"car_devkit","devkit"))
 CARS_TRAIN_PATH = Path(os.path.join(DATA_PATH,"cars_train","cars_train"))
-CARS_TEST_PATH = Path(os.path.join(DATA_PATH,"cars_test","cars_test"))
+CARS_TEST_PATH = Path(os.path.join(DATA_PATH,"cars_test","cars_test")) 
+
+URL = "https://www.kaggle.com/datasets/eduardo4jesus/stanford-cars-dataset"
+
 
 
 
