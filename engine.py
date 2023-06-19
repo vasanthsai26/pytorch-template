@@ -57,7 +57,7 @@ class ClassificationTrainer():
                                                                            max_metric,
                                                                            early_stopping_counter)
 
-            self.take_checkpoint(self, epoch, epoch_metrics, early_stopping_counter)
+            self.take_checkpoint(epoch, epoch_metrics, early_stopping_counter)
   
             if early_stopping_counter > self.args.early_stop_patience:
                 print(f"[INFO] Early stopping: no improvement for \
@@ -400,7 +400,7 @@ class ClassificationTrainer():
             None
         """
 
-        model_save_path = os.path.join(self.args.models, model_name)
+        model_save_path = os.path.join(self.args.models_dir, model_name)
         print(f"[INFO] Saving model to: {model_save_path}")
 
         torch.save(
