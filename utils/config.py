@@ -99,9 +99,7 @@ def parse_args():
     # Scheduler
     parser.add_argument('--scheduler_type', type=str, 
                         choices=['StepLR', 'MultiStepLR', 'ExponentialLR', 'ReduceLROnPlateau', 'CosineAnnealingLR', 'CyclicLR', 'LinearLR'], 
-                        default='LinearLR', help="Type of learning rate scheduler")
-
-    # Add the arguments specific to LinearLR
+                        default='StepLR', help="Type of learning rate scheduler")
     parser.add_argument('--total_steps', type=int, 
                         default=1000, help="Total number of steps")
     parser.add_argument('--level', default='epoch', choices=['epoch', 'batch'],
