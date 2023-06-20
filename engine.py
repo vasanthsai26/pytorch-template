@@ -387,9 +387,9 @@ class ClassificationTrainer():
         avg_metrics = OrderedDict()
         avg_metrics['train_loss'] = round(train_loss / len(dataloader), 6)
         avg_metrics['train_acc'] = round(train_acc / len(dataloader), 6)
-        avg_metrics['train_precision'] = round(train_loss / len(dataloader), 6)
-        avg_metrics['train_recall'] = round(train_loss / len(dataloader), 6)
-        avg_metrics['train_f1'] = round(train_loss / len(dataloader), 6)
+        avg_metrics['train_precision'] = round(train_precision / len(dataloader), 6)
+        avg_metrics['train_recall'] = round(train_recall / len(dataloader), 6)
+        avg_metrics['train_f1'] = round(train_f1 / len(dataloader), 6)
      
         return avg_metrics
     
