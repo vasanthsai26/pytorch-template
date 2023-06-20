@@ -86,41 +86,43 @@ def get_transforms(type):
     Returns:
         transforms.Compose: Composed transformations for the specified data type.
     """
-    if type == 'train':
-        weights = torchvision.models.ViT_B_16_Weights.DEFAULT
-        train_transform = weights.transforms()
-        return train_transform
-
-    elif type == 'test':
-        val_test_transform = transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Resize((224, 224)),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], 
-                             std=[0.5, 0.5, 0.5])
-        ])
-        return val_test_transform
     # if type == 'train':
-    #     train_transform = transforms.Compose([transforms.ToTensor(),
-    #         transforms.Resize((int(constants.IMG_SIZE * constants.SCALE),
-    #                            int(constants.IMG_SIZE * constants.SCALE))),
-    #         transforms.RandomResizedCrop(constants.IMG_SIZE),
-    #         transforms.RandomGrayscale(p=0.2),
-    #         transforms.Normalize(mean=constants.IMAGENET_MEAN,
-    #                              std=constants.IMAGENET_STD)
-    #     ])
+    #     weights = torchvision.models.ViT_B_16_Weights.DEFAULT
+    #     train_transform = weights.transforms()
     #     return train_transform
 
     # elif type == 'test':
-    #     val_test_transform = transforms.Compose([transforms.ToTensor(),
-    #         transforms.Resize(int(constants.IMG_SIZE * constants.SCALE)),
-    #         transforms.CenterCrop(constants.IMG_SIZE),
-    #         transforms.Normalize(mean=constants.IMAGENET_MEAN,
-    #                              std=constants.IMAGENET_STD)
+    #     val_test_transform = transform = transforms.Compose([
+    #     transforms.ToTensor(),
+    #     transforms.Resize((224, 224)),
+    #     transforms.Normalize(mean=[0.5, 0.5, 0.5], 
+    #                          std=[0.5, 0.5, 0.5])
     #     ])
     #     return val_test_transform
+    if type == 'train':
+         train_transform = transforms.Compose([transforms.ToPILImage(),
+             transforms.Resize((int(constants.IMG_SIZE * constants.SCALE),
+                                int(constants.IMG_SIZE * constants.SCALE))),
+             transforms.RandomResizedCrop(constants.IMG_SIZE),
+             transforms.RandomGrayscale(p=0.2),
+             transforms.ToTensor(),
+             transforms.Normalize(mean=constants.IMAGENET_MEAN,
+                                  std=constants.IMAGENET_STD)
+         ])
+         return train_transform
 
-def download_data(url=constants.URL):
-    od.download(url)
+    elif type == 'test':
+         val_test_transform = transforms.Compose([transforms.ToPILImage(),
+             transforms.Resize(int(constants.IMG_SIZE * constants.SCALE)),
+             transforms.CenterCrop(constants.IMG_SIZE),
+             transforms.ToTensor(),
+             transforms.Normalize(mean=constants.IMAGENET_MEAN,
+                                  std=constants.IMAGENET_STD)
+         ])
+         return val_test_transform
+
+# def download_data(url=constants.URL):
+#     od.download(url)
 
 def create_train_df(labels):
     """
@@ -246,6 +248,7 @@ def create_dataloaders(train_df: pd.DataFrame,
     )
 
     return train_dataloader, val_dataloader, test_dataloader
+
 
 
 
