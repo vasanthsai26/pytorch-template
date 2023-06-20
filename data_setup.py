@@ -1,4 +1,4 @@
-import cv2
+from PIL import Image
 import constants
 import torch
 import pandas as pd
@@ -8,8 +8,6 @@ import os
 from sklearn.model_selection import train_test_split
 from scipy.io import loadmat
 from pathlib import Path
-import torchvision
-
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -20,7 +18,6 @@ from typing import Optional
 from torch.utils.data import Dataset
 import pandas as pd
 import torchvision.transforms as transforms
-import cv2
 import torch
 
 class DefaultDataset(Dataset):
@@ -61,8 +58,10 @@ class DefaultDataset(Dataset):
         img_details = self.data_df.iloc[idx]
 
         img_path = img_details["file_path"]
-        image = cv2.imread(img_path)
-        img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # image = cv2.imread(img_path)
+        # img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = Image.open(img_path)
+        img = image.convert("RGB")
 
         if self.transform:
             img = self.transform(img).to(torch.float)
