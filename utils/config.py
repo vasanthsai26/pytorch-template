@@ -59,9 +59,9 @@ def parse_args():
     parser.add_argument('--train_split', type=float, default=0.8, help='Training split (default: 0.8)')
     parser.add_argument('--num_workers', type=int, default=os.cpu_count(),
                         help='Number of workers for data loading (default: os.cpu_count())')
-    parser.add_argument('--means', nargs='+', type=float, action='append', default=[[0.485, 0.456, 0.406]],
+    parser.add_argument('--means', nargs='+', type=float, action='append', default=[0.485, 0.456, 0.406],
                         help='List of means for image normalization (default=[0.485, 0.456, 0.406])')
-    parser.add_argument('--stds', nargs='+', type=float, action='append', default=[[0.229, 0.224, 0.225]],
+    parser.add_argument('--stds', nargs='+', type=float, action='append', default=[0.229, 0.224, 0.225],
                         help='List of stds for image normalization (default:[0.229, 0.224, 0.225])')
 
     # Model settings
@@ -98,8 +98,12 @@ def parse_args():
 
     # Scheduler
     parser.add_argument('--scheduler_type', type=str, 
-                        choices=['StepLR', 'MultiStepLR', 'ExponentialLR', 'ReduceLROnPlateau', 'CosineAnnealingLR', 'CyclicLR'], 
-                        default='StepLR', help='Type of LR scheduler')
+                        choices=['StepLR', 'MultiStepLR', 'ExponentialLR', 'ReduceLROnPlateau', 'CosineAnnealingLR', 'CyclicLR', 'LinearLR'], 
+                        default='LinearLR', help="Type of learning rate scheduler")
+
+    # Add the arguments specific to LinearLR
+    parser.add_argument('--total_steps', type=int, 
+                        default=1000, help="Total number of steps")
     parser.add_argument('--level', default='epoch', choices=['epoch', 'batch'],
                             help='Scheduling level: epoch or batch')
     parser.add_argument('--step_size', type=int, default=1, help='Step size for StepLR scheduler')
@@ -116,7 +120,9 @@ def parse_args():
     parser.add_argument('--T_max', type=int, default=10, 
                         help='T_max value for CosineAnnealingLR scheduler')
     parser.add_argument('--eta_min', type=float, default=0, 
-                        help='Eta_min value for CosineAnnealingLR scheduler')
+                        help='Eta_min value for Linear and CosineAnnealingLR scheduler')
+    parser.add_argument('--eta_max', type=float, default=1.0, 
+                        help="Maximum learning rate")
     parser.add_argument('--base_lr', type=float, default=0.001, 
                         help='Base learning rate for CyclicLR scheduler')
     parser.add_argument('--max_lr', type=float, default=0.01, 

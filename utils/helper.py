@@ -174,6 +174,7 @@ def create_lr_scheduler(args, optimizer):
         - ReduceLROnPlateau: mode (str), factor (float), patience (int)
         - CosineAnnealingLR: T_max (int), eta_min (float)
         - CyclicLR: base_lr (float), max_lr (float)
+        - LinearLR: total_steps (int), eta_min (float), eta_max (float)
     """
     scheduler = {
         'StepLR': lr_scheduler.StepLR(optimizer, step_size=args.step_size, gamma=args.gamma),
@@ -181,6 +182,7 @@ def create_lr_scheduler(args, optimizer):
         'ExponentialLR': lr_scheduler.ExponentialLR(optimizer, gamma=args.gamma),
         'ReduceLROnPlateau': lr_scheduler.ReduceLROnPlateau(optimizer, mode=args.mode, factor=args.factor, patience=args.patience),
         'CosineAnnealingLR': lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.T_max, eta_min=args.eta_min),
+        'LinearLR'': lr_scheduler.LinearLR(optimizer, total_steps=args.total_steps, eta_min=args.eta_min, eta_max=args.eta_max),
         ##'CyclicLR': lr_scheduler.CyclicLR(optimizer, base_lr=args.base_lr, max_lr=args.max_lr)
     }
 
@@ -188,8 +190,6 @@ def create_lr_scheduler(args, optimizer):
     if scheduler is None:
         raise ValueError("Invalid scheduler_type. Supported options are: StepLR, MultiStepLR, ExponentialLR, ReduceLROnPlateau, CosineAnnealingLR, CyclicLR.")
     return scheduler
-
-
 
 def load_checkpoint(checkpoint_path,model,optimizer):
     """Loads a checkpoint into the model.

@@ -24,11 +24,12 @@ class ClassificationTrainer():
                  args
                  ):
         self.args = args
-        self.model= model.to(self.args.device)
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.model= model.to(self.device)
         self.criterion = criterion
         self.optimizer = optimizer
         self.scheduler = scheduler
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        
 
     def fit(self,
             train_dataloader: torch.utils.data.DataLoader,
@@ -245,7 +246,6 @@ class ClassificationTrainer():
         y_pred = y_pred.detach().cpu().numpy()
 
         batch_metrics = {
-            "batch_accuracy"  : accuracy_score(y_true, y_pred),
             "batch_precision" : precision_score(y_true, y_pred, average='macro'),
             "batch_recall"    : recall_score(y_true, y_pred, average='macro'),
             "batch_f1_score"  : f1_score(y_true, y_pred, average='macro')
@@ -302,50 +302,96 @@ class ClassificationTrainer():
         Returns:
             dict: A dictionary containing the train epoch metrics
         """
-        # Put model in train mode
+        # # Put model in train mode
+        # self.model.train()
+        # # wandb.watch(self.model, criterion, log="all", log_freq=10)
+
+        # # Setup train metrics values
+        # epoch_metrics = self.reset_epoch_metrics()
+
+        # for batch_idx, (data, target) in enumerate(dataloader):
+        #     # Send data to target device
+        #     data, target = data.to(self.device), target.to(self.device)
+
+        #     # Forward pass
+        #     y_pred = self.model(data)
+
+        #     # Calculate  and accumulate loss
+        #     loss = criterion(y_pred, target)
+        #     epoch_metrics["epoch_loss"] += loss.item()
+
+        #     # Optimizer zero grad
+        #     optimizer.zero_grad()
+
+        #     # Loss backward
+        #     loss.backward()
+
+        #     if self.args.grad_clip and self.args.grad_clip != 0:
+        #         nn.utils.clip_grad_value_(self.model.parameters(), 
+        #                                   self.args.grad_clip)
+
+        #     # Optimizer step
+        #     optimizer.step()
+
+        #     # Scheduler step
+        #     scheduler.step()
+
+        #     # Calculate and accumulate accuracy metric across all batches
+        #     with torch.no_grad():
+        #         y_pred_class = torch.argmax(torch.softmax(y_pred, dim=1), dim=1)
+        #         batch_metrics = self.evaluate_batch(target,y_pred_class)
+        #         self.update_metrics(batch_metrics,epoch_metrics)
+
+        # # calculate avg metrics per batch
+        # avg_epoch_metrics = self.get_avg_metrics(epoch_metrics,len(dataloader))
+
+        # return avg_epoch_metrics
         self.model.train()
-        # wandb.watch(self.model, criterion, log="all", log_freq=10)
 
-        # Setup train metrics values
-        epoch_metrics = self.reset_epoch_metrics()
+        # Setup train loss and train accuracy values
+        train_loss, train_acc,train_precision,train_recall,train_f1 = 0, 0,0,0,0
 
-        for batch_idx, (data, target) in enumerate(dataloader):
+        # Loop through data loader data batches
+        for batch, (X, y) in enumerate(dataloader):
             # Send data to target device
-            data, target = data.to(self.device), target.to(self.device)
+            X, y = X.to(self.device), y.to(self.device)
 
-            # Forward pass
-            y_pred = self.model(data)
+            # 1. Forward pass
+            y_pred = self.model(X)
 
-            # Calculate  and accumulate loss
-            loss = criterion(y_pred, target)
-            epoch_metrics["epoch_loss"] += loss.item()
+            # 2. Calculate  and accumulate loss
+            loss = criterion(y_pred, y)
+            train_loss += loss.item() 
 
-            # Optimizer zero grad
+            # 3. Optimizer zero grad
             optimizer.zero_grad()
 
-            # Loss backward
+            # 4. Loss backward
             loss.backward()
 
-            if self.args.grad_clip and self.args.grad_clip != 0:
-                nn.utils.clip_grad_value_(self.model.parameters(), 
-                                          self.args.grad_clip)
-
-            # Optimizer step
+            # 5. Optimizer step
             optimizer.step()
 
-            # Scheduler step
-            scheduler.step()
-
-            # Calculate and accumulate accuracy metric across all batches
             with torch.no_grad():
+                # Calculate and accumulate accuracy metric across all batches
                 y_pred_class = torch.argmax(torch.softmax(y_pred, dim=1), dim=1)
-                batch_metrics = self.evaluate_batch(target,y_pred_class)
-                self.update_metrics(batch_metrics,epoch_metrics)
+                train_acc += (y_pred_class == y).sum().item()/len(y_pred)
 
-        # calculate avg metrics per batch
-        avg_epoch_metrics = self.get_avg_metrics(epoch_metrics,len(dataloader))
+                batch_metrics = self.evaluate_batch(y, y_pred_class)
+                train_precision += batch_metrics['batch_precision']
+                train_recall += batch_metrics['batch_recall']
+                train_f1 += batch_metrics['batch_f1_score']
 
-        return avg_epoch_metrics
+
+        # Adjust metrics to get average loss and accuracy per batch 
+        avg_metrics = OrderedDict()
+        avg_metrics['train_loss'] = round(train_loss / len(dataloader), 6)
+        avg_metrics['train_acc'] = round(train_acc / len(dataloader), 6)
+        avg_metrics['train_precision'] = round(train_loss / len(dataloader), 6)
+        avg_metrics['train_recall'] = round(train_loss / len(dataloader), 6)
+        avg_metrics['train_f1'] = round(train_loss / len(dataloader), 6)
+     
+        return avg_metrics
     
     def test_epoch(self,dataloader: torch.utils.data.DataLoader,
                    criterion: torch.nn.Module):
@@ -358,35 +404,70 @@ class ClassificationTrainer():
         Returns:
             dict: A dictionary containing the test epoch metrics
         """
-        # Put model in eval mode
-        self.model.eval()
+        # # Put model in eval mode
+        # self.model.eval()
 
-        # Setup test loss and test metric values
-        epoch_metrics = self.reset_epoch_metrics()
+        # # Setup test loss and test metric values
+        # epoch_metrics = self.reset_epoch_metrics()
 
-        # Turn on inference mode
+        # # Turn on inference mode
+        # with torch.inference_mode():
+
+        #     for batch_idx, (data, target) in enumerate(dataloader):
+        #         # Send data to target device
+        #         data, target = data.to(self.device), target.to(self.device)
+
+        #         # Forward pass
+        #         test_pred_logits = self.model(data)
+
+        #         # Calculate and accumulate loss
+        #         loss = criterion(test_pred_logits, target)
+        #         epoch_metrics["epoch_loss"] += loss.item()
+
+        #         #Calculate and accumulate accuracy
+        #         test_pred_labels = torch.argmax(torch.softmax(test_pred_logits, dim=1), dim=1)
+        #         batch_metrics = self.evaluate_batch(target,test_pred_labels)
+        #         self.update_metrics(batch_metrics,epoch_metrics)
+
+        #     # calculate avg metrics per batch
+        #     avg_epoch_metrics = self.get_avg_metrics(epoch_metrics,len(dataloader),train=False)
+        self.model.eval() 
+
+        # Setup test loss and test accuracy values
+        test_loss, test_acc,test_precision,test_recall,test_f1 = 0, 0,0,0,0
+
+        # Turn on inference context manager
         with torch.inference_mode():
-
-            for batch_idx, (data, target) in enumerate(dataloader):
+            # Loop through DataLoader batches
+            for batch, (X, y) in enumerate(dataloader):
                 # Send data to target device
-                data, target = data.to(self.device), target.to(self.device)
+                X, y = X.to(self.device), y.to(self.device)
 
-                # Forward pass
-                test_pred_logits = self.model(data)
+                # 1. Forward pass
+                test_pred_logits = self.model(X)
 
-                # Calculate and accumulate loss
-                loss = criterion(test_pred_logits, target)
-                epoch_metrics["epoch_loss"] += loss.item()
+                # 2. Calculate and accumulate loss
+                loss = criterion(test_pred_logits, y)
+                test_loss += loss.item()
 
-                #Calculate and accumulate accuracy
+                # Calculate and accumulate accuracy
                 test_pred_labels = torch.argmax(torch.softmax(test_pred_logits, dim=1), dim=1)
-                batch_metrics = self.evaluate_batch(target,test_pred_labels)
-                self.update_metrics(batch_metrics,epoch_metrics)
+                test_acc += ((test_pred_labels == y).sum().item()/len(test_pred_labels))
+                
+                batch_metrics = self.evaluate_batch(y, test_pred_labels)
+                test_precision += batch_metrics['batch_precision']
+                test_recall += batch_metrics['batch_recall']
+                test_f1 += batch_metrics['batch_f1_score']
 
-            # calculate avg metrics per batch
-            avg_epoch_metrics = self.get_avg_metrics(epoch_metrics,len(dataloader),train=False)
+        # Adjust metrics to get average loss and accuracy per batch 
+        avg_metrics = OrderedDict()
+        avg_metrics['val_loss'] = round(test_loss / len(dataloader), 6)
+        avg_metrics['val_acc'] = round(test_acc / len(dataloader), 6)
+        avg_metrics['val_precision'] = round(test_loss / len(dataloader), 6)
+        avg_metrics['val_recall'] = round(test_loss / len(dataloader), 6)
+        avg_metrics['val_f1'] = round(test_loss / len(dataloader), 6)
 
-        return avg_epoch_metrics
+        return avg_metrics
    
     def save_model(self, model_name, epoch, epoch_metrics):
         """
