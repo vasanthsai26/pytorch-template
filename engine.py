@@ -463,9 +463,9 @@ class ClassificationTrainer():
         avg_metrics = OrderedDict()
         avg_metrics['val_loss'] = round(test_loss / len(dataloader), 6)
         avg_metrics['val_acc'] = round(test_acc / len(dataloader), 6)
-        avg_metrics['val_precision'] = round(test_loss / len(dataloader), 6)
-        avg_metrics['val_recall'] = round(test_loss / len(dataloader), 6)
-        avg_metrics['val_f1'] = round(test_loss / len(dataloader), 6)
+        avg_metrics['val_precision'] = round(test_precision / len(dataloader), 6)
+        avg_metrics['val_recall'] = round(test_recall / len(dataloader), 6)
+        avg_metrics['val_f1'] = round(test_f1 / len(dataloader), 6)
 
         return avg_metrics
    
